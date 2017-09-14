@@ -12,9 +12,9 @@
 import ruit from 'ruit'
 ```
 
-[travis-image]: https://img.shields.io/travis/gianlucaguarini/ruit.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/GianlucaGuarini/ruit.svg?style=flat-square
 
-[travis-url]: https://travis-ci.org/gianlucaguarini/ruit
+[travis-url]: https://travis-ci.org/GianlucaGuarini/ruit
 
 [license-image]: http://img.shields.io/badge/license-MIT-000000.svg?style=flat-square
 
