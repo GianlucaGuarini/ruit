@@ -20,7 +20,7 @@ ruit.cancel = function () { return ruit.CANCEL; };
  * const addOne = (num) => num + 1
  *
  * const squareAsync = (num) => {
- *   new Promise(r => {
+ *   return new Promise(r => {
  *     setTimeout(r, 500, num * 2)
  *   })
  * }
