@@ -1,6 +1,6 @@
 {
   "name": "ruit",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Tasks serialization minilibrary",
   "main": "index.js",
   "jsnext:main": "index.next.js",
