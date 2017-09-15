@@ -3,8 +3,12 @@
 const assert = require('assert')
 const ruit = require('./')
 
-const addOne = num => num + 1
-const divideBy2 = num => num / 2
+const curry = f => a => b => f(a, b)
+const add = (a, b) => a + b
+const divide = (a, b) => b / a
+
+const addOne = curry(add)(1)
+const divideBy2 = curry(divide)(2)
 
 const squareAsync = (num) => {
   return new Promise(r => {
@@ -18,9 +22,9 @@ const addOneAsync = (num) => {
   })
 }
 
-describe('ruit', function() {
+describe('ruit()', function() {
   it('it can run a simple sync async sequence', (done) => {
-    ruit(squareAsync, addOne, 1)
+    ruit(1, addOne, squareAsync)
       .then(result => {
         assert.equal(result, 4)
         done()
@@ -28,16 +32,43 @@ describe('ruit', function() {
   })
 
   it('compose multiple ruit sequences', (done) => {
-    const addAndSquare = ruit(squareAsync, addOneAsync, 1)
-    ruit(divideBy2, addAndSquare).then(result => {
+    const addAndSquare = ruit(1, addOneAsync, squareAsync)
+    ruit(addAndSquare, divideBy2).then(result => {
       assert.equal(result, 2)
       done()
     })
   })
 
   it('it can cancel the sequence chain', (done) => {
-    const addAndSquare = ruit(squareAsync, addOneAsync, 1)
+    const addAndSquare = ruit(1, addOneAsync, squareAsync)
     ruit(ruit.cancel(), addAndSquare).then(result => {
+      throw new Error('it should never come here')
+    })
+
+    setTimeout(() => done(), 1000)
+  })
+})
+
+describe('ruit.compose()', function() {
+  it('it can run a simple sync async sequence', (done) => {
+    ruit.compose(squareAsync, addOne, 1)
+      .then(result => {
+        assert.equal(result, 4)
+        done()
+      })
+  })
+
+  it('compose multiple ruit sequences', (done) => {
+    const addAndSquare = ruit.compose(squareAsync, addOneAsync, 1)
+    ruit.compose(divideBy2, addAndSquare).then(result => {
+      assert.equal(result, 2)
+      done()
+    })
+  })
+
+  it('it can cancel the sequence chain', (done) => {
+    const addAndSquare = ruit.compose(squareAsync, addOneAsync, 1)
+    ruit.compose(ruit.cancel(), addAndSquare).then(result => {
       throw new Error('it should never come here')
     })
 

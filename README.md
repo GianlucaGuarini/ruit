@@ -1,12 +1,14 @@
 # ruit
 
+Functional tasks serialization mini script (0.3kb)
+
 [![Build Status][travis-image]][travis-url]
 
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
 [![MIT License][license-image]][license-url]
 
-## Usage
+## Installation
 
 ```js
 import ruit from 'ruit'
@@ -32,16 +34,67 @@ import ruit from 'ruit'
 
 ### ruit
 
-Serialize a list of sync and async tasks
+Serialize a list of sync and async tasks from left to right
 
 **Parameters**
 
--   `tasks` **any** list of tasks to process sequentially from right to left
+-   `tasks` **any** list of tasks to process sequentially
 
 **Examples**
 
 ```javascript
-const addOne = (num) => num + 1
+const curry = f => a => b => f(a, b)
+const add = (a, b) => a + b
+
+const addOne = curry(add)(1)
+
+const squareAsync = (num) => {
+  return new Promise(r => {
+    setTimeout(r, 500, num * 2)
+  })
+}
+
+// a -> a + a -> a * 2
+// basically from left to right: 1 => 1 + 1 => 2 * 2
+ruit(1, addOne, squareAsync).then(result => console.log(result)) // 4
+```
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** a promise containing the result of the whole chain
+
+#### cancel
+
+Helper that can be returned by ruit function to cancel the tasks chain
+
+**Examples**
+
+```javascript
+ruit(
+  100,
+  num => Math.random() * num
+  num => num > 50 ? ruit.cancel() : num
+  num => num - 2
+).then(result => {
+  console.log(result) // here we will get only number lower than 50
+})
+```
+
+Returns **[Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)** internal private constant
+
+#### compose
+
+The same as ruit() but with the arguments inverted from right to left
+
+**Parameters**
+
+-   `tasks` **any** list of tasks to process sequentially
+
+**Examples**
+
+```javascript
+const curry = f => a => b => f(a, b)
+const add = (a, b) => a + b
+
+const addOne = curry(add)(1)
 
 const squareAsync = (num) => {
   return new Promise(r => {
@@ -51,16 +104,11 @@ const squareAsync = (num) => {
 
 // a -> a + a -> a * 2
 // basically from right to left: 1 => 1 + 1 => 2 * 2
-ruit(squareAsync, addOne, 1)
-  .then(result => {
-    console.log(result) // 4
-  })
+ruit.compose(squareAsync, addOne, 1).then(result => console.log(result)) // 4
 ```
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** a promise containing the result of the whole chain
 
-#### cancel
+# Ruit meaning
 
-Helper that can be used to cancel the tasks chain
-
-Returns **[Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)** internal private constant
+`ruit` comes from the `ruere` latin verb that means `It falls`, It expresses properly the essence of this script and sounds also similar to `run it` a
