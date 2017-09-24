@@ -4,6 +4,11 @@
 	(global.ruit = factory());
 }(this, (function () { 'use strict';
 
+/**
+ * Cancel token
+ * @private
+ * @type { Symbol }
+ */
 var CANCEL = Symbol();
 
 /**
@@ -13,8 +18,8 @@ var CANCEL = Symbol();
  *
  * ruit(
  *   100,
- *   (num) => Math.random() * num
- *   (num) => num > 50 ? ruit.cancel() : num
+ *   num => Math.random() * num
+ *   num => num > 50 ? ruit.cancel() : num
  *   num => num - 2
  * ).then(result => {
  *   console.log(result) // here we will get only number lower than 50
@@ -24,12 +29,15 @@ var CANCEL = Symbol();
 ruit.cancel = function () { return CANCEL; };
 
 /**
- * Serialize a list of sync and async tasks from right to left
+ * The same as ruit() but with the arguments inverted from right to left
  * @param   { * } tasks - list of tasks to process sequentially
  * @returns { Promise } a promise containing the result of the whole chain
  * @example
  *
- * const addOne = (num) => num + 1
+ * const curry = f => a => b => f(a, b)
+ * const add = (a, b) => a + b
+ *
+ * const addOne = curry(add)(1)
  *
  * const squareAsync = (num) => {
  *   return new Promise(r => {
@@ -39,10 +47,7 @@ ruit.cancel = function () { return CANCEL; };
  *
  * // a -> a + a -> a * 2
  * // basically from right to left: 1 => 1 + 1 => 2 * 2
- * ruit.compose(squareAsync, addOne, 1)
- *   .then(result => {
- *     console.log(result) // 4
- *   })
+ * ruit.compose(squareAsync, addOne, 1).then(result => console.log(result)) // 4
  */
 ruit.compose = function () {
   var tasks = [], len = arguments.length;
@@ -57,7 +62,10 @@ ruit.compose = function () {
  * @returns { Promise } a promise containing the result of the whole chain
  * @example
  *
- * const addOne = (num) => num + 1
+ * const curry = f => a => b => f(a, b)
+ * const add = (a, b) => a + b
+ *
+ * const addOne = curry(add)(1)
  *
  * const squareAsync = (num) => {
  *   return new Promise(r => {
@@ -67,10 +75,7 @@ ruit.compose = function () {
  *
  * // a -> a + a -> a * 2
  * // basically from left to right: 1 => 1 + 1 => 2 * 2
- * ruit(1, addOne, squareAsync, )
- *   .then(result => {
- *     console.log(result) // 4
- *   })
+ * ruit(1, addOne, squareAsync).then(result => console.log(result)) // 4
  */
 function ruit () {
   var tasks = [], len = arguments.length;
@@ -82,12 +87,11 @@ function ruit () {
 
       var task = tasks.shift();
       var value = typeof task === 'function' ? task(result) : task;
-      var done = function (data) { return run(data); };
 
       if (value === CANCEL) { return }
-      if (value.then) { return value.then(done) }
+      if (value.then) { return value.then(run) }
 
-      return Promise.resolve(done(value))
+      return Promise.resolve(run(value))
     })()
   })
 }

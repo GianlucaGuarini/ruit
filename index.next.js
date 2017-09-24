@@ -73,12 +73,11 @@ export default function ruit (...tasks) {
 
       const task = tasks.shift()
       const value = typeof task === 'function' ? task(result) : task
-      const done = (data) => run(data)
 
       if (value === CANCEL) return
-      if (value.then) return value.then(done)
+      if (value.then) return value.then(run)
 
-      return Promise.resolve(done(value))
+      return Promise.resolve(run(value))
     })()
   })
 }

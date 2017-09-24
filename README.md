@@ -1,4 +1,4 @@
-# ruit
+<img src="ruit-logo.svg" width="46%"/>
 
 Functional tasks serialization mini script (0.3kb)
 
@@ -111,4 +111,4 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # Ruit meaning
 
-`ruit` comes from the `ruere` latin verb that means `It falls`, It expresses properly the essence of this script and sounds also similar to `run it` a
+`ruit` comes from the `ruere` latin verb that means `It falls`, It expresses properly the essence of this script and sounds also similar to `run it`
