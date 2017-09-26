@@ -31,6 +31,14 @@ describe('ruit()', function() {
       })
   })
 
+  it('it can handle also nil return values', (done) => {
+    ruit(undefined, null, 0)
+      .then(result => {
+        assert.equal(result, 0)
+        done()
+      })
+  })
+
   it('compose multiple ruit sequences', (done) => {
     const addAndSquare = ruit(1, addOneAsync, squareAsync)
     ruit(addAndSquare, divideBy2).then(result => {
