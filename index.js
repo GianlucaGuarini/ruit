@@ -91,7 +91,8 @@ function ruit () {
       // check against nil values
       if (value != null) {
         if (value === CANCEL) { return }
-        if (value.then) { return value.then(run) }
+        if (value instanceof Error) { return Promise.reject(value) }
+        if (value.then) { return value.then(run, run) }
       }
 
       return Promise.resolve(run(value))

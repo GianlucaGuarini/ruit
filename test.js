@@ -47,6 +47,35 @@ describe('ruit()', function() {
     })
   })
 
+  it('it can catch errors in the sequence chain', (done) => {
+    const addAndSquare = ruit(1, addOneAsync, squareAsync)
+    ruit(
+      () => {
+        throw new Error('random error')
+      },
+      addAndSquare
+    )
+      .then(result => {
+        throw new Error('it should never come here')
+      })
+      .catch(() => done())
+  })
+
+
+  it('it can catch rejections in the sequence chain', (done) => {
+    const addAndSquare = ruit(1, addOneAsync, squareAsync)
+    ruit(
+      () => {
+        return Promise.reject()
+      },
+      addAndSquare
+    )
+      .then(result => {
+        throw new Error('it should never come here')
+      })
+      .catch(() => done())
+  })
+
   it('it can cancel the sequence chain', (done) => {
     const addAndSquare = ruit(1, addOneAsync, squareAsync)
     ruit(ruit.cancel(), addAndSquare).then(result => {
