@@ -48,32 +48,32 @@ describe('ruit()', function() {
   })
 
   it('it can catch errors in the sequence chain', (done) => {
+    const errorMessage = 'random error'
     const addAndSquare = ruit(1, addOneAsync, squareAsync)
     ruit(
       () => {
-        throw new Error('random error')
+        throw new Error(errorMessage)
       },
       addAndSquare
     )
-      .then(result => {
-        throw new Error('it should never come here')
+      .catch((e) => {
+        if (e.message === errorMessage) done()
       })
-      .catch(() => done())
   })
 
 
   it('it can catch rejections in the sequence chain', (done) => {
+    const errorMessage = 'random error'
     const addAndSquare = ruit(1, addOneAsync, squareAsync)
     ruit(
       () => {
-        return Promise.reject()
+        return Promise.reject(errorMessage)
       },
       addAndSquare
     )
-      .then(result => {
-        throw new Error('it should never come here')
+      .catch((e) => {
+        if (e === errorMessage) done()
       })
-      .catch(() => done())
   })
 
   it('it can cancel the sequence chain', (done) => {

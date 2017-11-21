@@ -67,7 +67,7 @@ ruit.compose = (...tasks) => ruit(...tasks.reverse())
  * ruit(1, addOne, squareAsync).then(result => console.log(result)) // 4
  */
 export default function ruit (...tasks) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     return (function run(result) {
       if (!tasks.length) return resolve(result)
 
@@ -77,8 +77,7 @@ export default function ruit (...tasks) {
       // check against nil values
       if (value != null) {
         if (value === CANCEL) return
-        if (value instanceof Error) return Promise.reject(value)
-        if (value.then) return value.then(run, run)
+        if (value.then) return value.then(run, reject)
       }
 
       return Promise.resolve(run(value))

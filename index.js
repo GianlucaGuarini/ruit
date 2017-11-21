@@ -81,7 +81,7 @@ function ruit () {
   var tasks = [], len = arguments.length;
   while ( len-- ) tasks[ len ] = arguments[ len ];
 
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     return (function run(result) {
       if (!tasks.length) { return resolve(result) }
 
@@ -91,8 +91,7 @@ function ruit () {
       // check against nil values
       if (value != null) {
         if (value === CANCEL) { return }
-        if (value instanceof Error) { return Promise.reject(value) }
-        if (value.then) { return value.then(run, run) }
+        if (value.then) { return value.then(run, reject) }
       }
 
       return Promise.resolve(run(value))
