@@ -1,3 +1,7 @@
 extends: "@gianlucaguarini/eslint-config"
 env:
   mocha: true
+
+rules:
+  fp/no-rest-parameters: false
+  fp/no-mutating-methods: false

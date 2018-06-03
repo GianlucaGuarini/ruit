@@ -1,11 +1,11 @@
 import buble from 'rollup-plugin-buble'
 export default {
-  entry: 'index.next.js',
+  input: 'index.next.js',
   plugins: [buble()],
-  targets: [
+  output: [
     {
-      moduleName: 'ruit',
-      dest: 'index.js',
+      name: 'ruit',
+      file: 'index.js',
       format: 'umd'
     }
   ]

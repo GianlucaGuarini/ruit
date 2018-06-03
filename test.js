@@ -78,7 +78,7 @@ describe('ruit()', function() {
 
   it('it can cancel the sequence chain', (done) => {
     const addAndSquare = ruit(1, addOneAsync, squareAsync)
-    ruit(ruit.cancel(), addAndSquare).then(result => {
+    ruit(ruit.cancel(), addAndSquare).then(() => {
       throw new Error('it should never come here')
     })
 
@@ -105,7 +105,7 @@ describe('ruit.compose()', function() {
 
   it('it can cancel the sequence chain', (done) => {
     const addAndSquare = ruit.compose(squareAsync, addOneAsync, 1)
-    ruit.compose(ruit.cancel(), addAndSquare).then(result => {
+    ruit.compose(ruit.cancel(), addAndSquare).then(() => {
       throw new Error('it should never come here')
     })
 
