@@ -68,19 +68,20 @@ ruit.compose = (...tasks) => ruit(...tasks.reverse())
  */
 export default function ruit(...tasks) {
   return new Promise((resolve, reject) => {
-    return (function run(result) {
-      if (!tasks.length) return resolve(result)
+    return (function run(queue, result) {
+      if (!queue.length) return resolve(result)
 
-      const task = tasks.shift()
+      const [task, ...rest] = queue
       const value = typeof task === 'function' ? task(result) : task
+      const done = v => run(rest, v)
 
       // check against nil values
       if (value != null) {
         if (value === CANCEL) return
-        if (value.then) return value.then(run, reject)
+        if (value.then) return value.then(done, reject)
       }
 
-      return Promise.resolve(run(value))
-    })()
+      return Promise.resolve(done(value))
+    })(tasks)
   })
 }

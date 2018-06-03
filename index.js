@@ -82,20 +82,22 @@
     while ( len-- ) tasks[ len ] = arguments[ len ];
 
     return new Promise(function (resolve, reject) {
-      return (function run(result) {
-        if (!tasks.length) { return resolve(result) }
+      return (function run(queue, result) {
+        if (!queue.length) { return resolve(result) }
 
-        var task = tasks.shift();
+        var task = queue[0];
+        var rest = queue.slice(1);
         var value = typeof task === 'function' ? task(result) : task;
+        var done = function (v) { return run(rest, v); };
 
         // check against nil values
         if (value != null) {
           if (value === CANCEL) { return }
-          if (value.then) { return value.then(run, reject) }
+          if (value.then) { return value.then(done, reject) }
         }
 
-        return Promise.resolve(run(value))
-      })()
+        return Promise.resolve(done(value))
+      })(tasks)
     })
   }
 
